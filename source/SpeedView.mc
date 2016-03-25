@@ -6,7 +6,7 @@ class SpeedView extends Ui.DataField {
     hidden var currSpd;
     hidden var avgSpd;
 
-    hidden var factor=3.6;
+    hidden var factor = 3.6;
     hidden var label;
     hidden var unitLabel;
 
@@ -14,7 +14,7 @@ class SpeedView extends Ui.DataField {
         unitLabel = Ui.loadResource(Rez.Strings.unitMetric);
         label = Ui.loadResource(Rez.Strings.speed);
         if (System.getDeviceSettings().distanceUnits == System.UNIT_STATUTE) {
-            factor=2.2369362920544;
+            factor = 2.2369362920544;
             unitLabel = Ui.loadResource(Rez.Strings.unitImperial);
         }
         DataField.initialize();
@@ -23,6 +23,19 @@ class SpeedView extends Ui.DataField {
     //! Set your layout here. Anytime the size of obscurity of
     //! the draw context is changed this will be called.
     function onLayout(dc) {
+        System.println("Width: " + dc.getWidth() + ", Height:" + dc.getHeight());
+        if (dc.getWidth() < 120) {
+            View.setLayout(Rez.Layouts.Edge1kSmall(dc));
+            var value = View.findDrawableById("value");
+            value.locY = value.locY + 10;
+        } else {
+            View.setLayout(Rez.Layouts.Edge1kBig(dc));
+            var value = View.findDrawableById("value");
+            value.locY = value.locY + 15;
+        }
+        var labelText = View.findDrawableById("label");
+        labelText.setText(label + " " + unitLabel);
+        return true;
     }
 
     //! The given info object contains all the current workout
@@ -31,33 +44,43 @@ class SpeedView extends Ui.DataField {
         // See Activity.Info in the documentation for available information.
         currSpd = info.currentSpeed;
         avgSpd = info.averageSpeed;
+        if (currSpd == null) {
+            currSpd = 0;
+        }
+        if (avgSpd == null) {
+            avgSpd = 0;
+        }
 
     }
 
     function formatSpd(spd) {
         var speedInUnit = spd * factor;
-        var format = "%4.2f";
-        if (speedInUnit > 100) {
-            format = "%4.1f";
-        }
+        var format = "%3.1f";
         return speedInUnit.format(format);
     }
 
     //! Display the value you computed here. This will be called
     //! once a second when the data field is visible.
     function onUpdate(dc) {
-        System.println("Width: " + dc.getWidth() + ", Height:" + dc.getHeight());
-        dc.setColor(Gfx.COLOR_TRANSPARENT, getBackgroundColor());
-        dc.clear();
+        View.findDrawableById("Background").setColor(getBackgroundColor());
 
         var fgColor = Gfx.COLOR_BLACK;
         if (getBackgroundColor() == Gfx.COLOR_BLACK) {
             fgColor = Gfx.COLOR_WHITE;
         }
+        var label = View.findDrawableById("label");
+        var value = View.findDrawableById("value");
+
+        label.setColor(fgColor);
+        value.setColor(fgColor);
+
+        value.setText(formatSpd(currSpd));
+        View.onUpdate(dc);
 
         //dc.fillRectangle(0,0, dc.getWidth(), dc.getHeight());
+        /*
         if (currSpd == null || avgSpd == null) {
-            return;
+        return;
         }
         var arrWidth = dc.getWidth() / 6;
         var padding = 10;
@@ -70,11 +93,11 @@ class SpeedView extends Ui.DataField {
         var minY = offset + (valHeight / 2) - arrWidth;
 
         if (currSpd < avgSpd) {
-            minY = offset + (valHeight / 2);
+        minY = offset + (valHeight / 2);
         }
 
         if ((minY + arrWidth) > dc.getHeight() || (minY < 0)) {
-            minY = dc.getHeight() / 2 - arrWidth / 2;
+        minY = dc.getHeight() / 2 - arrWidth / 2;
         }
 
         var maxY = minY + arrWidth;
@@ -85,8 +108,8 @@ class SpeedView extends Ui.DataField {
 
         // Arrow down if current smaller than average
         if (currSpd < avgSpd) {
-            arrow = [ [minX, minY], [avgX, maxY], [maxX, minY] ];
-            fillColorArrow = Gfx.COLOR_RED;
+        arrow = [ [minX, minY], [avgX, maxY], [maxX, minY] ];
+        fillColorArrow = Gfx.COLOR_RED;
         }
 
         dc.setColor(fillColorArrow, Gfx.COLOR_TRANSPARENT);
@@ -95,6 +118,7 @@ class SpeedView extends Ui.DataField {
         dc.setColor(fgColor, Gfx.COLOR_TRANSPARENT);
         dc.drawText( padding, padding, Gfx.FONT_SMALL, label + " " + unitLabel , Gfx.TEXT_JUSTIFY_LEFT);
         dc.drawText( padding, dc.getHeight() / 2 -5, Gfx.FONT_LARGE, formatSpd(currSpd), Gfx.TEXT_JUSTIFY_LEFT);
+         */
 
     }
 
