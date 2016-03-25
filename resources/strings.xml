@@ -1,0 +1,5 @@
+<resources>
+    <string id="speed">Speed</string>
+    <string id="unitMetric">km/h</string>
+    <string id="unitImperial">mph</string>
+</resources>

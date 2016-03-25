@@ -8,22 +8,17 @@ class SpeedView extends Ui.DataField {
 
     hidden var factor=3.6;
     hidden var label;
+    hidden var unitLabel;
 
     function initialize() {
-        label = "km/h";
-        DataField.initialize();
+        unitLabel = Ui.loadResource(Rez.Strings.unitMetric);
+        label = Ui.loadResource(Rez.Strings.speed);
         if (System.getDeviceSettings().distanceUnits == System.UNIT_STATUTE) {
             factor=2.2369362920544;
-            label = "mph";
+            unitLabel = Ui.loadResource(Rez.Strings.unitImperial);
         }
-
+        DataField.initialize();
     }
-
-    function onSensor(sensorInfo)
-    {
-        System.println("Heart Rate: " + sensorInfo.heartRate);
-    }
-
 
     //! Set your layout here. Anytime the size of obscurity of
     //! the draw context is changed this will be called.
@@ -51,6 +46,7 @@ class SpeedView extends Ui.DataField {
     //! Display the value you computed here. This will be called
     //! once a second when the data field is visible.
     function onUpdate(dc) {
+        System.println("Width: " + dc.getWidth() + ", Height:" + dc.getHeight());
         dc.setColor(Gfx.COLOR_TRANSPARENT, getBackgroundColor());
         dc.clear();
 
@@ -97,7 +93,7 @@ class SpeedView extends Ui.DataField {
         dc.fillPolygon(arrow);
 
         dc.setColor(fgColor, Gfx.COLOR_TRANSPARENT);
-        dc.drawText( padding, padding, Gfx.FONT_SMALL, "Speed " + label , Gfx.TEXT_JUSTIFY_LEFT);
+        dc.drawText( padding, padding, Gfx.FONT_SMALL, label + " " + unitLabel , Gfx.TEXT_JUSTIFY_LEFT);
         dc.drawText( padding, dc.getHeight() / 2 -5, Gfx.FONT_LARGE, formatSpd(currSpd), Gfx.TEXT_JUSTIFY_LEFT);
 
     }
